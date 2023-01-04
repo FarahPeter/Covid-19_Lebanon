@@ -7,8 +7,14 @@ import getCovid19Data
 #get uptodate data
 upToDateData=getCovid19Data.GetCovid19DataLeb()
 cases=upToDateData["total cases"]
+for i in range (len(cases)):
+    if (cases[i]!=0):
+        break
+cases=cases[i:]
 deaths=upToDateData["total deaths"]
+deaths=deaths[i:]
 tempactivecases=upToDateData["active cases"]
+tempactivecases=tempactivecases[i:]
 recoveries=[(cases[i]-tempactivecases[i]-deaths[i]) for i in range (len(cases))]
 
 
@@ -417,10 +423,7 @@ Undererr=0
 UndererrCounter=0
 equal=0
 for i in range (l-4):
-    if (cases[i+4]==0):
-        CurErr=abs(((expectedTomArray[i]-cases[i+4])/(cases[i+4]+1)) *100)
-    else:
-        CurErr = abs(((expectedTomArray[i] - cases[i + 4]) / cases[i + 4]) * 100)
+    CurErr=abs(((expectedTomArray[i]-cases[i+4])/cases[i+4]) *100)
     error=CurErr+error
     #ErrorArray[i]=CurErr
     if(expectedTomArray[i]-cases[i+4] >0):
