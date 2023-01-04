@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import json
+from datetime import datetime
+from datetime import date
 
 def find_between( s, first, last=None):
     try:
@@ -16,34 +18,41 @@ def find_between( s, first, last=None):
         return ""
 
 
+# Write Data in JSON file
+def WriteToJSON(ar):
+    # putting data in JSON file
+    with open('CovidData'+'.json', 'w') as f:
+        json.dump(ar, f)
+#WriteToJSON({"total cases":[],"total deaths":[],"active cases":[],"last update": str(datetime.now())})
+
 def GetCovid19DataLeb():
     def ExtractData(response):
         #total cases
         totalcasesFullData=find_between(response,"Total Cases","responsive")
         day=find_between(totalcasesFullData,"categories: ","        }")
         totalCasesData=find_between(totalcasesFullData,"data: ","        }],")
-        print("Days: "+str(day))
-        print("Total cases: "+str(totalCasesData))
+        #print("Days: "+str(day))
+        #print("Total cases: "+str(totalCasesData))
 
         #daily cases
         dailyCasesFullData = find_between(response, "Daily New Cases", "responsive")
         dailyCasesData = find_between(dailyCasesFullData, "data: ", "            },")
-        print("Daily cases: "+str(dailyCasesData))
+        #print("Daily cases: "+str(dailyCasesData))
 
         #Active cases
         activeCasesFullData = find_between(response, "Active Cases", "responsive")
         activeCasesData = find_between(activeCasesFullData, "data: ", "        }")
-        print("Active cases: "+str(activeCasesData))
+        #print("Active cases: "+str(activeCasesData))
 
         # total death
         totalDeathFullData = find_between(response, "Total Deaths", "responsive")
         totalDeathData = find_between(totalDeathFullData, "data: ", "        }],")
-        print("Total death: " + str(totalDeathData))
+        #print("Total death: " + str(totalDeathData))
 
         # daily death
         dailyDeathFullData = find_between(response, "Daily Deaths", "responsive")
         dailyDeathData = find_between(totalDeathFullData, "data: ", "        }],")
-        print("Daily death: " + str(totalDeathData))
+        #print("Daily death: " + str(totalDeathData))
 
         #converting all results into array
         day=json.loads(day)
@@ -53,7 +62,7 @@ def GetCovid19DataLeb():
         totalDeathData=json.loads(totalDeathData)
         dailyDeathData=json.loads(dailyDeathData)
         #print(len(totalCasesData),len(dailyCasesData),len(activeCasesData),len(totalDeathData),len(dailyDeathData))
-        return ({"total cases":totalCasesData,"total deaths":totalDeathData,"active cases":activeCasesData})
+        return ({"total cases":totalCasesData,"total deaths":totalDeathData,"active cases":activeCasesData,"last update":str(datetime.now())})
 
 
     def GetCovidData():
@@ -83,9 +92,15 @@ def GetCovid19DataLeb():
     }
         response = requests.get('https://www.worldometers.info/coronavirus/country/lebanon/',cookies=cookies,headers=headers)
         return response
-
-    response=GetCovidData()
-    data=ExtractData(response.text)
+    try:
+        response=GetCovidData()
+        data=ExtractData(response.text)
+        WriteToJSON({"total cases":data["total cases"],"total deaths":data["total deaths"],"active cases":data["active cases"],"last update": str(datetime.now())})
+    except:
+        # Opening JSON file
+        f = open('CovidData.json')
+        data=json.load(f)
+        f.close()
     return(data)
 
 

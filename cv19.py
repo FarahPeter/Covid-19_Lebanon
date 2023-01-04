@@ -699,6 +699,7 @@ plt.title('Cumulative Curves of last 14 days')
 
 #prints
 print()
+print("Data last updated on "+upToDateData["last update"])
 print("Day 0 of first confirmed Covid-19 case in Lebanon was on 21/02/2020")
 print()
 print("                                         Comaprison to last week:")
